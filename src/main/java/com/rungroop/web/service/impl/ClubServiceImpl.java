@@ -2,7 +2,10 @@ package com.rungroop.web.service.impl;
 
 import com.rungroop.web.dto.ClubDto;
 import com.rungroop.web.models.Club;
+import com.rungroop.web.models.UserEntity;
 import com.rungroop.web.repository.ClubRepository;
+import com.rungroop.web.repository.UserRepository;
+import com.rungroop.web.security.SecurityUtil;
 import com.rungroop.web.service.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,9 +19,11 @@ import static com.rungroop.web.mapper.ClubMapper.mapToClubDto;
 @Service
 public class ClubServiceImpl implements ClubService {
     private final ClubRepository clubRepository;
+    private UserRepository userRepository;
     @Autowired
-    public ClubServiceImpl(ClubRepository clubRepository) {
+    public ClubServiceImpl(ClubRepository clubRepository, UserRepository userRepository) {
         this.clubRepository = clubRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -28,7 +33,10 @@ public class ClubServiceImpl implements ClubService {
     }
     @Override
     public Club saveClub(ClubDto clubDto) {
+        String email = SecurityUtil.getSessionUser();
+        UserEntity user = userRepository.findByEmail(email);
         Club club = mapToClub(clubDto);
+        club.setCreatedBy(user);
         return clubRepository.save(club);
     }
     @Override
@@ -38,7 +46,10 @@ public class ClubServiceImpl implements ClubService {
     }
     @Override
     public void updateClub(ClubDto clubDto) {
+        String email = SecurityUtil.getSessionUser();
+        UserEntity user = userRepository.findByEmail(email);
         Club club = mapToClub(clubDto);
+        club.setCreatedBy(user);
         clubRepository.save(club);
     }
 

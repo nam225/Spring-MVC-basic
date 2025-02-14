@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface ClubRepository extends JpaRepository<Club, Long> {
     Optional<Club> findByTitle(String url);
-    @Query("SELECT c from Club c WHERE c.title LIKE CONCAT('%', :query, '%')")
+    @Query("SELECT c FROM Club c WHERE LOWER(c.title) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<Club> searchClub(String query);
 }
